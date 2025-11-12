@@ -1,16 +1,20 @@
 import React from "react";
 import { Outlet } from "react-router";
-// import Footer from "../Components/Footer";
-// import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
+import Navbar from "../Components/Navbar";
 
 const MainLayout = () => {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="sticky top-0 z-50">{/* <Navbar /> */}</header>
+      <header className="sticky top-0 z-50">
+        <Navbar />
+      </header>
       <main className="flex-grow">
         <Outlet />
       </main>
-      <footer>{/* <Footer /> */}</footer>
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 };
