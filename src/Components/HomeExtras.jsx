@@ -71,8 +71,8 @@ const HomeExtras = () => {
       <section
         className={`py-24 px-6 transition-all duration-700 ${
           isDark
-            ? "bg-gradient-to-r from-[#F97316] via-[#EC4899] to-[#7E3AF2]"
-            : "bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316]"
+            ? "bg-gradient-to-r from-[#F97316]/70 via-[#EC4899]/70 to-[#7E3AF2]/70"
+            : "bg-gradient-to-r from-[#7E3AF2]/90 via-[#EC4899]/90 to-[#F97316]/90"
         } text-white`}
       >
         <div className="max-w-5xl mx-auto text-center">
