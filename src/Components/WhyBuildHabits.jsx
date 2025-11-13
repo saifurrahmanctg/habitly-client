@@ -55,7 +55,7 @@ const WhyBuildHabits = () => {
   return (
     <section
       className={`py-16 px-6 sm:px-10 bg-gradient-to-b ${
-        isDark ? "dark-bg" : "light-bg-reverse"
+        isDark ? "dark-bg" : "light-bg"
       } transition-all duration-500 overflow-hidden`}
     >
       <div className="max-w-6xl mx-auto text-center">
@@ -65,7 +65,7 @@ const WhyBuildHabits = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="text-4xl sm:text-5xl font-extrabold mb-6 bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] bg-clip-text text-transparent"
+          className="text-3xl sm:text-4xl font-extrabold mb-6 bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] bg-clip-text text-transparent"
         >
           Why Build Habits?
         </motion.h2>

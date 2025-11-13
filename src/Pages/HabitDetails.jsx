@@ -237,7 +237,7 @@ const HabitDetails = () => {
               <button
                 onClick={handleMarkComplete}
                 disabled={isCompleting}
-                className={`w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
+                className={`w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
                   isCompleting
                     ? "bg-gray-400 cursor-wait"
                     : "bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] text-white hover:opacity-90"

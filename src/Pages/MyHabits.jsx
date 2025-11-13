@@ -16,6 +16,7 @@ const MyHabits = () => {
     description: "",
     category: "",
     targetDays: 30,
+    image: "",
   });
   const { isDark } = useTheme();
   const calculateStreak = useCalculateStreak();
@@ -152,6 +153,7 @@ const MyHabits = () => {
       description: habit.description || "",
       category: habit.category || "",
       targetDays: habit.targetDays || 30,
+      image: habit.image || "",
     });
   };
 
@@ -256,11 +258,12 @@ const MyHabits = () => {
                 }`}
               >
                 <tr>
-                  <th className="py-3 px-4 font-semibold">Title</th>
-                  <th className="py-3 px-4 font-semibold">Category</th>
-                  <th className="py-3 px-4 font-semibold">Streak</th>
-                  <th className="py-3 px-4 font-semibold">Created</th>
-                  <th className="py-3 px-4 font-semibold text-center">
+                  <th className="py-3 px-3 font-semibold">Image</th>
+                  <th className="py-3 px-3 font-semibold">Title</th>
+                  <th className="py-3 px-3 font-semibold">Category</th>
+                  <th className="py-3 px-3 font-semibold">Streak</th>
+                  <th className="py-3 px-3 font-semibold">Created</th>
+                  <th className="py-3 px-3 font-semibold text-center">
                     Actions
                   </th>
                 </tr>
@@ -281,15 +284,29 @@ const MyHabits = () => {
                           : "hover:bg-rose-50 border-b border-gray-200"
                       }`}
                     >
-                      <td className="py-3 px-4 font-medium">{habit.title}</td>
-                      <td className="py-3 px-4">{habit.category}</td>
-                      <td className="py-3 px-4 flex items-center gap-1 text-orange-500">
+                      <td className="py-2 px-3">
+                        {habit.image ? (
+                          <img
+                            src={habit.image}
+                            alt={habit.title}
+                            className="w-auto h-12 rounded-lg object-cover border border-gray-300"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs">
+                            N/A
+                          </div>
+                        )}
+                      </td>
+
+                      <td className="py-3 px-3 font-medium">{habit.title}</td>
+                      <td className="py-3 px-3">{habit.category}</td>
+                      <td className="py-3 px-3 flex items-center gap-1 text-orange-500">
                         <Flame size={16} /> {habit.streak || 0}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-3">
                         {new Date(habit.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="py-3 px-4 flex justify-center gap-3">
+                      <td className="py-3 px-3 flex justify-center gap-3">
                         <button
                           onClick={() => openEditModal(habit)}
                           className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition"
@@ -376,6 +393,18 @@ const MyHabits = () => {
                 placeholder="Description"
                 className="w-full mt-1.5 px-4 py-2 border rounded-lg"
               />
+              <label className="font-semibold text-lg text-rose-500 ml-1">
+                Image URL
+              </label>
+              <input
+                type="text"
+                name="image"
+                value={formData.image || ""}
+                onChange={handleChange}
+                placeholder="Enter image URL"
+                className="w-full mt-1.5 px-4 py-2 border rounded-lg"
+              />
+
               <label className="font-semibold text-lg text-rose-500 ml-1">
                 Target Days
               </label>

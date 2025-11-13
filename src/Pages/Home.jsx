@@ -4,6 +4,7 @@ import FeaturedHabits from "../Components/FeaturedHabits";
 import Slider from "../Components/Slider";
 import WhyBuildHabits from "../Components/WhyBuildHabits";
 import HomeExtras from "../Components/HomeExtras";
+import TopContributors from "../Components/TopContributors";
 
 const Home = () => {
   return (
@@ -16,6 +17,9 @@ const Home = () => {
       </section>
       <section>
         <WhyBuildHabits />
+      </section>
+      <section>
+        <TopContributors />
       </section>
       <section>
         <HomeExtras />

@@ -20,7 +20,7 @@ const Slider = () => {
     fetch("http://localhost:3000/habits")
       .then((res) => res.json())
       .then((data) => {
-        const latest = data.slice(0, 3);
+        const latest = data.slice(0, 4);
         setHabits(latest);
         setLoading(false);
       })
@@ -91,11 +91,7 @@ const Slider = () => {
 
                     <Link
                       to={`/habit-details/${habit._id}`}
-                      className={`px-8 py-3 rounded-full drop-shadow-2xl font-semibold transition-all duration-300 ${
-                        isDark
-                          ? "border border-gray-300 text-gray-200 hover:bg-gray-700"
-                          : "border border-rose-500 text-rose-500 hover:bg-gray-100"
-                      }`}
+                      className="px-8 py-3 rounded-full drop-shadow-2xl font-semibold transition-all duration-300 border border-gray-300 text-gray-200 hover:bg-gray-700"
                     >
                       View Details
                     </Link>
