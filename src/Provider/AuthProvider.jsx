@@ -49,7 +49,7 @@ const AuthProvider = ({ children }) => {
 
         // 🔄 Optionally sync with backend `/users`
         try {
-          await fetch("http://localhost:3000/users", {
+          await fetch("https://habitly-server-eosin.vercel.app/users", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -89,7 +89,7 @@ const AuthProvider = ({ children }) => {
     setLoading(false);
 
     // 🔄 Save to backend
-    await fetch("http://localhost:3000/users", {
+    await fetch("https://habitly-server-eosin.vercel.app/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -137,7 +137,7 @@ const AuthProvider = ({ children }) => {
     setLoading(false);
 
     // 🔄 Sync with backend
-    await fetch("http://localhost:3000/users", {
+    await fetch("https://habitly-server-eosin.vercel.app/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -150,7 +150,7 @@ const Login = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] hover:opacity-90 text-white py-2 rounded-full font-semibold shadow-md transition"
+            className="w-full bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] hover:opacity-90 text-white py-2 rounded-full cursor-pointer font-semibold shadow-md transition"
           >
             Login
           </button>
@@ -178,7 +178,7 @@ const Login = () => {
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-full font-medium shadow-md transition"
+          className="w-full flex items-center justify-center gap-2 bg-emerald-500 cursor-pointer hover:bg-emerald-600 text-white py-2 rounded-full font-medium shadow-md transition"
         >
           <FaGoogle size={20} /> Login with Google
         </button>
@@ -192,7 +192,7 @@ const Login = () => {
           Don’t have an account?{" "}
           <Link
             to="/register"
-            className="gradient-text font-medium hover:font-bold"
+            className="gradient-text font-medium hover:font-bold cursor-pointer"
           >
             Register
           </Link>

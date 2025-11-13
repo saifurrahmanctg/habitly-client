@@ -12,7 +12,8 @@ import PrivateRoute from "./PrivateRoute";
 import MyHabits from "../Pages/MyHabits";
 import Profile from "../Pages/Profile";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://habitly-server-eosin.vercel.app";
 
 // 🧠 Helper function to securely fetch data
 const secureFetch = async (url) => {

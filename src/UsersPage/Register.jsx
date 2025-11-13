@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { User, Mail, Lock, Image, EyeOff, Eye } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
-import { AuthContext } from "../Provider/AuthProvider"; // ✅ fixed path casing
-import { useNavigate, Link } from "react-router"; // ✅ fixed import
+
+import { useNavigate, Link } from "react-router";
 import Swal from "sweetalert2";
 import useTheme from "../utils/useTheme";
+import { AuthContext } from "../provider/AuthProvider";
 
 const Register = () => {
   const { signUp, signInWithGoogle } = useContext(AuthContext);
@@ -239,7 +240,7 @@ const Register = () => {
           {/* Sign Up Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] hover:opacity-90 text-white py-2 rounded-full font-semibold shadow-md transition"
+            className="w-full bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] hover:opacity-90 text-white py-2 rounded-full font-semibold cursor-pointer shadow-md transition"
           >
             Sign Up
           </button>
@@ -267,7 +268,7 @@ const Register = () => {
         {/* Google Sign In */}
         <button
           onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-full font-medium shadow-md transition"
+          className="w-full flex items-center justify-center gap-2 bg-emerald-500 cursor-pointer hover:bg-emerald-600 text-white py-2 rounded-full font-medium shadow-md transition"
         >
           <FaGoogle size={20} /> Sign up with Google
         </button>
@@ -281,7 +282,7 @@ const Register = () => {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="gradient-text font-medium hover:font-bold"
+            className="gradient-text font-medium cursor-pointer hover:font-bold"
           >
             Login
           </Link>

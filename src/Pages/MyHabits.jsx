@@ -30,7 +30,7 @@ const MyHabits = () => {
       try {
         const token = await getIdToken();
         const res = await fetch(
-          `http://localhost:3000/habits?userEmail=${user.email}`,
+          `https://habitly-server-eosin.vercel.app/habits?userEmail=${user.email}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -70,10 +70,13 @@ const MyHabits = () => {
 
     try {
       const token = await getIdToken();
-      const res = await fetch(`http://localhost:3000/habits/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `https://habitly-server-eosin.vercel.app/habits/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to delete habit");
 
@@ -118,14 +121,17 @@ const MyHabits = () => {
 
     try {
       const token = await getIdToken();
-      const res = await fetch(`http://localhost:3000/habits/${habit._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedHabit),
-      });
+      const res = await fetch(
+        `https://habitly-server-eosin.vercel.app/habits/${habit._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedHabit),
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to update database");
 
@@ -173,7 +179,7 @@ const MyHabits = () => {
     try {
       const token = await getIdToken();
       const res = await fetch(
-        `http://localhost:3000/habits/${editingHabit._id}`,
+        `https://habitly-server-eosin.vercel.app/habits/${editingHabit._id}`,
         {
           method: "PUT",
           headers: {

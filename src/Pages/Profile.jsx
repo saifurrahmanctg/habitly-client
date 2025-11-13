@@ -13,7 +13,7 @@ const Profile = () => {
 
   // ✅ Fetch all habits
   useEffect(() => {
-    fetch("http://localhost:3000/habits")
+    fetch("https://habitly-server-eosin.vercel.app/habits")
       .then((res) => res.json())
       .then((data) => {
         setHabits(data);

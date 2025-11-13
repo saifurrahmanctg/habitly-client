@@ -17,7 +17,7 @@ const Slider = () => {
 
   // Fetch last 3 habits
   useEffect(() => {
-    fetch("http://localhost:3000/habits")
+    fetch("https://habitly-server-eosin.vercel.app/habits")
       .then((res) => res.json())
       .then((data) => {
         const latest = data.slice(0, 4);

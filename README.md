@@ -1,6 +1,6 @@
 # 🌟 Habitly — Build Better Habits, One Day at a Time
 
-**Live Site:** [https://habitly-app.netlify.app](https://habitly-app.netlify.app)
+**Live Site:** [https://habitly-client.web.app/](https://habitly-client.web.app/)
 
 ---
 
@@ -74,6 +74,7 @@ npm run dev
 
 ## 📂 Folder Structure
 
+```
 src/
 │
 ├── assets/
@@ -128,8 +129,9 @@ src/
 ├── package.json
 ├── README.md
 └── vite.config.js
+```
 
 ---
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by Saifur Rahman Chowdhury
 © 2025 Habitly — All Rights Reserved.

@@ -19,7 +19,7 @@ const FeaturedHabits = () => {
     const fetchHabits = async () => {
       try {
         const res = await fetch(
-          "http://localhost:3000/habits?sort=desc&limit=6"
+          "https://habitly-server-eosin.vercel.app/habits?sort=desc&limit=6"
         );
         const data = await res.json();
         setHabits(data);

@@ -5,7 +5,6 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Swal from "sweetalert2";
 import Loader from "../Components/Loader";
-import NotFound from "../Components/NotFound";
 import useCalculateStreak from "../utils/useCalculateStreak";
 import { getAuth } from "firebase/auth";
 import useTheme from "../utils/useTheme";
@@ -101,7 +100,7 @@ const HabitDetails = () => {
       const token = currentUser ? await currentUser.getIdToken() : null;
 
       const res = await fetch(
-        `http://localhost:3000/habits/${habit._id}/progress`,
+        `https://habitly-server-eosin.vercel.app/habits/${habit._id}/progress`,
         {
           method: "PATCH",
           headers: {

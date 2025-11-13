@@ -50,7 +50,8 @@ const AddHabit = () => {
       const token = await auth.currentUser.getIdToken();
 
       // Send secure request to backend
-      const res = await fetch("http://localhost:3000/habits", {
+      const res = await ("https://habitly-server-eosin.vercel.app/habits",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

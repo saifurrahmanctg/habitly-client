@@ -13,7 +13,9 @@ const TopContributors = () => {
   useEffect(() => {
     const fetchContributors = async () => {
       try {
-        const res = await fetch("http://localhost:3000/habits");
+        const res = await fetch(
+          "https://habitly-server-eosin.vercel.app/habits"
+        );
         const habits = await res.json();
 
         if (!Array.isArray(habits)) {
