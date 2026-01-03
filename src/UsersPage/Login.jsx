@@ -34,7 +34,7 @@ const Login = () => {
         color: swalColors.color,
         confirmButtonColor: "#EC4899",
       });
-      navigate(location.state?.from || "/");
+      navigate(location.state?.from || "/dashboard");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -58,7 +58,7 @@ const Login = () => {
         color: swalColors.color,
         confirmButtonColor: "#10B981",
       });
-      navigate(location.state?.from || "/");
+      navigate(location.state?.from || "/dashboard");
     } catch (error) {
       Swal.fire({
         icon: "error",

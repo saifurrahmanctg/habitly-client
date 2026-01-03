@@ -1,8 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Edit, CalendarDays, Mail, ListChecks } from "lucide-react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import {
+  Edit,
+  CalendarDays,
+  Mail,
+  ListChecks,
+  ShieldCheck,
+  ShieldAlert,
+  User,
+  Flame,
+  Clock,
+  Key,
+} from "lucide-react";
 import useTheme from "../utils/useTheme";
 import Loader from "../Components/Loader";
-import { AuthContext } from "../Provider/AuthProvider";
+import { AuthContext } from "../provider/AuthProvider";
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -11,7 +22,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [habits, setHabits] = useState([]);
 
-  // ✅ Fetch all habits
+  /* ---------------- Fetch Habits ---------------- */
   useEffect(() => {
     fetch("https://habitly-server-eosin.vercel.app/habits")
       .then((res) => res.json())
@@ -19,159 +30,189 @@ const Profile = () => {
         setHabits(data);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching habits:", error);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
-  // ✅ Filter: show habits the user has marked complete today
-  const markedHabits = habits.filter((habit) => {
-    const userProgress = habit.userProgressMap?.[user?.email];
-    if (!userProgress) return false;
+  /* ---------------- Date Helpers ---------------- */
+  const today = new Date().toISOString().split("T")[0];
 
-    const today = new Date().toISOString().split("T")[0];
-    return userProgress.completionHistory?.includes(today);
+  /* ---------------- Filter Completed Today ---------------- */
+  const markedHabits = habits.filter((habit) => {
+    const progress = habit.userProgressMap?.[user?.email];
+    return progress?.completionHistory?.includes(today);
   });
+
+  /* ---------------- Stats ---------------- */
+  const stats = useMemo(() => {
+    let maxStreak = 0;
+    let totalProgress = 0;
+
+    habits.forEach((habit) => {
+      const p = habit.userProgressMap?.[user?.email];
+      if (p) {
+        maxStreak = Math.max(maxStreak, p.streak || 0);
+        totalProgress += p.progress || 0;
+      }
+    });
+
+    return {
+      totalHabits: habits.length,
+      completedToday: markedHabits.length,
+      maxStreak,
+      avgProgress:
+        habits.length > 0 ? Math.round(totalProgress / habits.length) : 0,
+    };
+  }, [habits, markedHabits, user]);
 
   if (!user) {
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${
-          isDark ? "dark-bg" : "light-bg"
-        }`}
-      >
-        <p className="text-xl font-semibold">
-          Please log in to view your profile.
-        </p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl font-semibold">Please log in to view profile.</p>
       </div>
     );
   }
 
   return (
     <div
-      className={`min-h-screen py-12 px-6 transition-all duration-700 ${
-        isDark ? "dark-bg" : "light-bg"
+      className={`min-h-screen px-6 py-10 transition-all ${
+        isDark ? "dark-bg" : "light-bg-reverse"
       }`}
     >
-      {/* 👤 Profile Info */}
-      <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700 transition-all duration-500">
-        <div className="flex flex-col md:flex-row items-center gap-8">
+      {/* ================= Profile Card ================= */}
+      <div
+        className={`max-w-6xl mx-auto  rounded-2xl shadow-xl p-8 ${
+          isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+        }`}
+      >
+        <div className="flex flex-col md:flex-row gap-8 items-center">
           <img
             src={
               user.photoURL ||
               "https://i.ibb.co/gbJ2W8mJ/MOHAMMAD-SAIFUR-RAHMAN-CHOWDHURY-2021.jpg"
             }
-            alt="User Avatar"
-            className="w-36 h-36 rounded-2xl border-4 border-gradient-to-r from-purple-600 to-pink-400 object-cover shadow-lg"
+            alt="avatar"
+            className="w-36 h-36 rounded-2xl object-cover border-4 border-purple-500"
           />
+
           <div className="flex-1 space-y-3">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-              {user.displayName || "User"}
+            <h2 className="text-3xl font-bold gradient-text drop-shadow-md">
+              {user.displayName || "Habitly User"}
             </h2>
-            <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-              <Mail size={18} /> {user.email}
+
+            <p className="flex items-center gap-2">
+              <Mail size={16} /> {user.email}
             </p>
-            {user.metadata?.creationTime && (
-              <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                <CalendarDays size={18} />
-                Joined:{" "}
-                {new Date(user.metadata.creationTime).toLocaleDateString()}
-              </p>
-            )}
-            <div className="pt-4">
-              <button
-                className="px-5 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 hover:opacity-90 transition flex items-center gap-2"
-                onClick={() => alert("Edit profile coming soon!")}
-              >
-                <Edit size={18} />
-                Edit Profile
-              </button>
+
+            <p className="flex items-center gap-2">
+              <User size={16} /> UID: {user.uid}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <Key size={16} /> Provider:{" "}
+              {user.providerData?.[0]?.providerId || "email/password"}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <CalendarDays size={16} />
+              Joined:{" "}
+              {user?.metadata?.creationTime
+                ? new Date(user.metadata.creationTime).toLocaleDateString()
+                : "N/A"}
+            </p>
+
+            <p className="flex items-center gap-2">
+              <Clock size={16} />
+              Last Login:{" "}
+              {user?.metadata?.lastSignInTime
+                ? new Date(user.metadata.lastSignInTime).toLocaleString()
+                : "N/A"}
+            </p>
+
+            <div className="flex items-center gap-2">
+              {user.emailVerified ? (
+                <span className="flex items-center gap-1 text-green-500">
+                  <ShieldCheck size={16} /> Email Verified
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-red-500">
+                  <ShieldAlert size={16} /> Email Not Verified
+                </span>
+              )}
             </div>
+
+            <button className="mt-4 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white flex items-center gap-2">
+              <Edit size={16} /> Edit Profile
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ✅ Marked (Completed) Habits Section */}
-      <div className="max-w-5xl mx-auto mt-12">
-        <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-          <ListChecks className="text-blue-500" />
-          Habits Completed Today
+      {/* ================= Stats ================= */}
+      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+        {[
+          ["bg-[#7E3AF2]", "Total Habits", stats.totalHabits],
+          ["bg-[#EC4899]", "Completed Today", stats.completedToday],
+          ["bg-[#F97316]", "Max Streak", `${stats.maxStreak} 🔥`],
+          ["bg-gray-500", "Avg Progress", `${stats.avgProgress}%`],
+        ].map(([bgColor, label, value]) => (
+          <div
+            key={label}
+            className={`p-6 rounded-xl shadow ${bgColor} text-white text-center border`}
+          >
+            <h4 className="text-sm font-semibold text-gray-200">{label}</h4>
+            <p className="text-3xl font-bold mt-2">{value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= Completed Habits ================= */}
+      <div className="max-w-6xl mx-auto mt-12">
+        <h3 className="text-2xl font-semibold flex items-center gap-2 mb-4">
+          <ListChecks /> Habits Completed Today
         </h3>
 
         {loading ? (
           <Loader />
         ) : markedHabits.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">
-            You haven’t completed any habits today.
-          </p>
+          <p className="text-gray-500">No habits completed today.</p>
         ) : (
-          <div
-            className={`overflow-x-auto ${
-              isDark
-                ? "bg-gray-800 border-gray-700"
-                : "bg-white border-gray-200"
-            }  shadow-md rounded-2xl border `}
-          >
+          <div className="overflow-x-auto rounded-xl shadow border border-white">
             <table
               className={`min-w-full text-left ${
-                isDark ? "text-gray-200" : "text-gray-800"
-              } `}
+                isDark
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200"
+              }`}
             >
               <thead
-                className={`${
-                  isDark ? "bg-gray-700" : "bg-orange-100"
-                } text-sm uppercase tracking-wider`}
+                className={`text-left ${
+                  isDark
+                    ? "bg-gray-700 text-gray-200"
+                    : "bg-pink-200 text-gray-900"
+                }`}
               >
                 <tr>
-                  <th className="py-3 px-4 font-semibold">Image</th>
-                  <th className="py-3 px-4 font-semibold">Habit Title</th>
-                  <th className="py-3 px-4 font-semibold">Category</th>
-                  <th className="py-3 px-4 font-semibold">Streak</th>
-                  <th className="py-3 px-4 font-semibold">Progress</th>
-                  <th className="py-3 px-4 font-semibold">Target Days</th>
+                  <th className="px-4 py-3">Habit</th>
+                  <th className="px-4 py-3">Category</th>
+                  <th className="px-4 py-3">Streak</th>
+                  <th className="px-4 py-3">Progress</th>
                 </tr>
               </thead>
               <tbody>
                 {markedHabits.map((habit) => {
-                  const userProgress = habit.userProgressMap?.[user?.email];
+                  const p = habit.userProgressMap?.[user.email];
                   return (
-                    <tr
-                      key={habit._id}
-                      className={`border-t ${
-                        isDark ? "border-gray-700" : "border-gray-200"
-                      } hover:bg-gray-50 dark:hover:bg-gray-300 transition`}
-                    >
-                      <td className="py-2 px-4">
-                        {habit.image ? (
-                          <img
-                            src={habit.image}
-                            alt={habit.title}
-                            className="w-auto h-12 rounded-md object-cover border border-gray-300"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs">
-                            N/A
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 font-medium">{habit.title}</td>
-                      <td className="py-3 px-4">{habit.category}</td>
-                      <td className="py-3 px-4">
-                        {userProgress?.streak || 0} 🔥
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                    <tr key={habit._id} className="border-t">
+                      <td className="px-4 py-3 font-medium">{habit.title}</td>
+                      <td className="px-4 py-3">{habit.category}</td>
+                      <td className="px-4 py-3">{p?.streak || 0} 🔥</td>
+                      <td className="px-4 py-3">
+                        <div className="h-3 bg-gray-200 rounded-full">
                           <div
-                            className="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full"
-                            style={{
-                              width: `${userProgress?.progress || 0}%`,
-                            }}
-                          ></div>
+                            className="h-3 bg-blue-500 rounded-full"
+                            style={{ width: `${p?.progress || 0}%` }}
+                          />
                         </div>
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        {habit.targetDays || 30}
                       </td>
                     </tr>
                   );

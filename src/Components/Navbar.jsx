@@ -59,13 +59,10 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    ...(user
-      ? [
-          { name: "Add Habit", path: "/add-habit" },
-          { name: "My Habits", path: "/my-habits" },
-        ]
-      : []),
     { name: "Browse Habits", path: "/habits" },
+    { name: "About Us", path: "/about" },
+    { name: "Contact Us", path: "/contact" },
+    ...(user ? [{ name: "Dashboard", path: "/dashboard" }] : []),
   ];
 
   const isDark = theme === "dark";
@@ -89,7 +86,7 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden focus:outline-none ${
+            className={`md:hidden focus:outline-none cursor-pointer ${
               isDark ? "text-white" : "text-purple-600"
             }`}
           >
@@ -134,13 +131,13 @@ const Navbar = () => {
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `relative transition duration-300 ${
+                `relative transition-all duration-500 ${
                   isActive
-                    ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 font-semibold"
+                    ? "text-transparent border-b-2 border-pink-400 bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 font-semibold"
                     : `${
                         isDark
-                          ? "text-gray-300 hover:text-pink-400"
-                          : "text-gray-800 hover:text-purple-600"
+                          ? "text-gray-300 hover:text-pink-400 hover:border-b-2 hover:border-pink-400"
+                          : "text-gray-800 hover:text-purple-600 hover:border-b-2 hover:border-purple-600"
                       }`
                 }`
               }
@@ -209,7 +206,7 @@ const Navbar = () => {
                     <p className="text-xs opacity-70">{user.email}</p>
                     <hr className="my-2 w-full border-pink-300" />
                     <Link
-                      to="/profile"
+                      to="/dashboard/profile"
                       onClick={() => setDropdownOpen(false)}
                       className={`w-full mb-2 text-left cursor-pointer ${dropdownText} transition`}
                     >

@@ -1,20 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 /**
- * Custom hook to track and respond to global theme changes.
- * Returns the current theme ("light" | "dark") and a boolean flag `isDark`.
+ * Custom hook to manage and track global theme (light / dark)
  */
 const useTheme = () => {
-  const [theme, setTheme] = useState(
-    document.documentElement.getAttribute("data-theme") || "light"
-  );
+  const getInitialTheme = () => {
+    return (
+      localStorage.getItem("theme") ||
+      document.documentElement.getAttribute("data-theme") ||
+      "light"
+    );
+  };
 
+  const [theme, setThemeState] = useState(getInitialTheme);
+
+  // Apply theme to <html> and persist it
+  const setTheme = useCallback((newTheme) => {
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+    setThemeState(newTheme);
+  }, []);
+
+  // Observe external changes (optional but safe)
   useEffect(() => {
-    // Observe changes to the `data-theme` attribute on <html>
     const observer = new MutationObserver(() => {
       const currentTheme =
         document.documentElement.getAttribute("data-theme") || "light";
-      setTheme(currentTheme);
+
+      setThemeState(currentTheme);
     });
 
     observer.observe(document.documentElement, {
@@ -25,9 +38,14 @@ const useTheme = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Ensure theme is applied on mount
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   const isDark = theme === "dark";
 
-  return { theme, isDark };
+  return { theme, isDark, setTheme };
 };
 
 export default useTheme;

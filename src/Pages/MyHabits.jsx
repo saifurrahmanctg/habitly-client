@@ -222,7 +222,7 @@ const MyHabits = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-extrabold text-center  gradient-text drop-shadow-md">
+        <h2 className="text-4xl font-extrabold text-center gradient-text drop-shadow-md">
           My Habits
         </h2>
         <p

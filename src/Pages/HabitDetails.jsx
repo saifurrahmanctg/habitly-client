@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { Sparkles, Flame, CheckCircle } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -18,6 +18,7 @@ const HabitDetails = () => {
   const { isDark } = useTheme();
   const auth = getAuth();
   const calculateStreak = useCalculateStreak();
+  const navigate = useNavigate();
 
   // 🌈 Init AOS
   useEffect(() => {
@@ -54,12 +55,14 @@ const HabitDetails = () => {
   /** ✅ Handle Mark Complete for this user only */
   const handleMarkComplete = async () => {
     if (!userEmail) {
-      return Swal.fire({
+      await Swal.fire({
         title: "Login Required",
         text: "Please log in to track your progress 💡",
         icon: "info",
         confirmButtonColor: "#7E3AF2",
       });
+      navigate("/login");
+      return;
     }
 
     if (alreadyCompleted) {

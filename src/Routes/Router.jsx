@@ -11,6 +11,11 @@ import HabitDetails from "../Pages/HabitDetails";
 import PrivateRoute from "./PrivateRoute";
 import MyHabits from "../Pages/MyHabits";
 import Profile from "../Pages/Profile";
+import DashboardLayout from "../Layouts/DashboardLayout";
+import AboutUs from "../Pages/AboutUs";
+import ContactUs from "../Pages/ContactUs";
+import DashboardHome from "../Pages/DashboardHome";
+import Settings from "../Pages/Settings";
 
 const API_BASE =
   import.meta.env.VITE_API_URL || "https://habitly-server-eosin.vercel.app";
@@ -48,6 +53,21 @@ const router = createBrowserRouter([
         loader: async () => fetch(`${API_BASE}/habits`),
         element: <AllHabits />,
       },
+      {
+        path: "habit-details/:id",
+        loader: async ({ params }) => fetch(`${API_BASE}/habits/${params.id}`),
+        element: <HabitDetails />,
+      },
+
+      // Shared pages
+      {
+        path: "about",
+        element: <AboutUs />,
+      },
+      {
+        path: "contact",
+        element: <ContactUs />,
+      },
 
       // 👤 Auth routes
       {
@@ -58,27 +78,32 @@ const router = createBrowserRouter([
         path: "login",
         element: <Login />,
       },
-
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <DashboardHome />
+          </PrivateRoute>
+        ),
+      },
       // 🔒 Protected routes
       {
-        path: "add-habit",
+        path: "/dashboard/add-habit",
         element: (
           <PrivateRoute>
             <AddHabit />
           </PrivateRoute>
         ),
       },
+
       {
-        path: "habit-details/:id",
-        loader: async ({ params }) => fetch(`${API_BASE}/habits/${params.id}`),
-        element: (
-          <PrivateRoute>
-            <HabitDetails />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "my-habits",
+        path: "/dashboard/my-habits",
         element: (
           <PrivateRoute>
             <MyHabits />
@@ -86,10 +111,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "profile",
+        path: "/dashboard/profile",
         element: (
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/settings",
+        element: (
+          <PrivateRoute>
+            <Settings />
           </PrivateRoute>
         ),
       },
