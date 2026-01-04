@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Crown, Flame, Award } from "lucide-react";
 import useTheme from "../utils/useTheme";
-import { AuthContext } from "../Provider/AuthProvider";
+import { AuthContext } from "../provider/AuthProvider";
 
 const TopContributors = () => {
   const [contributors, setContributors] = useState([]);
@@ -13,9 +13,7 @@ const TopContributors = () => {
   useEffect(() => {
     const fetchContributors = async () => {
       try {
-        const res = await fetch(
-          "https://habitly-server-eosin.vercel.app/habits"
-        );
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/habits`);
         const habits = await res.json();
 
         if (!Array.isArray(habits)) {

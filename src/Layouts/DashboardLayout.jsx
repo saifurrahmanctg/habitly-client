@@ -247,7 +247,7 @@ const DashboardLayout = () => {
           </ul>
 
           {/* Bottom Section */}
-          <div className="border-t p-5 space-y-2">
+          <div className="border-t p-5 space-y-3">
             <NavLink
               to="/dashboard/profile"
               className={navItem}

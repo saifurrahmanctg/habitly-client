@@ -103,7 +103,7 @@ const HabitDetails = () => {
       const token = currentUser ? await currentUser.getIdToken() : null;
 
       const res = await fetch(
-        `https://habitly-server-eosin.vercel.app/habits/${habit._id}/progress`,
+        `${import.meta.env.VITE_API_URL}/habits/${habit._id}/progress`,
         {
           method: "PATCH",
           headers: {

@@ -17,8 +17,7 @@ import ContactUs from "../Pages/ContactUs";
 import DashboardHome from "../Pages/DashboardHome";
 import Settings from "../Pages/Settings";
 
-const API_BASE =
-  import.meta.env.VITE_API_URL || "https://habitly-server-eosin.vercel.app";
+const API_BASE = import.meta.env.VITE_API_URL || [];
 
 // 🧠 Helper function to securely fetch data
 const secureFetch = async (url) => {

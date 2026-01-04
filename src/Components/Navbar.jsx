@@ -3,8 +3,8 @@ import { Link, NavLink, useNavigate } from "react-router";
 import { Sun, Moon } from "lucide-react";
 import logoLight from "../assets/logo-light.png";
 import logoDark from "../assets/logo-dark.png";
-import { AuthContext } from "../provider/AuthProvider";
 import Swal from "sweetalert2";
+import { AuthContext } from "../provider/AuthProvider";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);

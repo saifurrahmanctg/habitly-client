@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import app from "../firebase/firebase.config";
 import {
   getAuth,
@@ -10,56 +10,92 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
+import Swal from "sweetalert2";
 
 export const AuthContext = createContext();
-
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-const AuthProvider = ({ children }) => {
+const toast = (icon, title) =>
+  Swal.fire({
+    icon,
+    title,
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /** ✅ Helper to persist user locally */
-  const persistUser = (userData) => {
-    if (userData) localStorage.setItem("userData", JSON.stringify(userData));
-    else localStorage.removeItem("userData");
+  const persistUser = (u) =>
+    u
+      ? localStorage.setItem("userData", JSON.stringify(u))
+      : localStorage.removeItem("userData");
+
+  // Fetch user from MongoDB
+  const fetchUserFromDB = async (email, token) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/${email}`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+      if (!res.ok) throw new Error("Failed to fetch user from DB");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   };
 
-  /** ✅ On initial mount, restore user from localStorage */
-  useEffect(() => {
-    const storedUser = localStorage.getItem("userData");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+  // Sync user to MongoDB
+  const syncUserToDB = async (userData, token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: userData.displayName || "No Name",
+          email: userData.email,
+          photoURL: userData.photoURL || "",
+          role: "user",
+        }),
+      });
+      const result = await res.json();
+      return result;
+    } catch (err) {
+      console.error("Error syncing user to DB:", err);
+      return null;
+    }
+  };
 
-  /** ✅ Listen for Firebase Auth state changes */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
-        const newUser = {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoURL: currentUser.photoURL,
+    const raw = localStorage.getItem("userData");
+    if (raw) setUser(JSON.parse(raw));
+
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        const token = await fbUser.getIdToken();
+        const dbUser = await fetchUserFromDB(fbUser.email, token);
+
+        const profile = {
+          uid: fbUser.uid,
+          email: fbUser.email,
+          displayName: fbUser.displayName,
+          photoURL: fbUser.photoURL,
+          role: dbUser?.role || "user",
           token,
         };
-        setUser(newUser);
-        persistUser(newUser);
 
-        // 🔄 Optionally sync with backend `/users`
-        try {
-          await fetch("https://habitly-server-eosin.vercel.app/users", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(newUser),
-          });
-        } catch (error) {
-          console.error("⚠️ Failed to sync user with backend:", error);
-        }
+        setUser(profile);
+        persistUser(profile);
       } else {
         setUser(null);
         persistUser(null);
@@ -67,89 +103,98 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return unsub;
   }, []);
 
-  /** 🔹 Sign up with email + password */
+  // ---------- Auth Actions ----------
   const signUp = async (email, password, name, photoURL) => {
     setLoading(true);
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(result.user, { displayName: name, photoURL });
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name, photoURL });
 
-    const token = await result.user.getIdToken();
-    const newUser = {
-      uid: result.user.uid,
-      email,
-      displayName: name,
-      photoURL,
-      token,
-    };
-    setUser(newUser);
-    persistUser(newUser);
-    setLoading(false);
+      const token = await cred.user.getIdToken();
+      await syncUserToDB(cred.user, token);
 
-    // 🔄 Save to backend
-    await fetch("https://habitly-server-eosin.vercel.app/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(newUser),
-    });
+      const profile = {
+        uid: cred.user.uid,
+        email,
+        displayName: name,
+        photoURL,
+        role: "user",
+        token,
+      };
 
-    return result.user;
+      setUser(profile);
+      persistUser(profile);
+      toast("success", "Account created!");
+      return cred.user;
+    } catch (err) {
+      toast("error", err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /** 🔹 Login with email + password */
   const login = async (email, password) => {
     setLoading(true);
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    const token = await result.user.getIdToken();
-    const loggedUser = {
-      uid: result.user.uid,
-      email,
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      token,
-    };
-    setUser(loggedUser);
-    persistUser(loggedUser);
-    setLoading(false);
-    return result.user;
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const token = await cred.user.getIdToken();
+
+      const dbUser = await fetchUserFromDB(email, token);
+
+      const profile = {
+        uid: cred.user.uid,
+        email,
+        displayName: cred.user.displayName,
+        photoURL: cred.user.photoURL,
+        role: dbUser?.role || "user",
+        token,
+      };
+
+      setUser(profile);
+      persistUser(profile);
+      toast("success", "Welcome back!");
+      return cred.user;
+    } catch (err) {
+      toast("error", err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /** 🔹 Google Sign-in */
   const signInWithGoogle = async () => {
     setLoading(true);
-    const result = await signInWithPopup(auth, googleProvider);
-    const token = await result.user.getIdToken();
+    try {
+      const cred = await signInWithPopup(auth, googleProvider);
+      const token = await cred.user.getIdToken();
 
-    const newUser = {
-      uid: result.user.uid,
-      email: result.user.email,
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      token,
-    };
-    setUser(newUser);
-    persistUser(newUser);
-    setLoading(false);
+      await syncUserToDB(cred.user, token);
 
-    // 🔄 Sync with backend
-    await fetch("https://habitly-server-eosin.vercel.app/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(newUser),
-    });
+      const profile = {
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: cred.user.displayName,
+        photoURL: cred.user.photoURL,
+        role: "user",
+        token,
+      };
 
-    return result.user;
+      setUser(profile);
+      persistUser(profile);
+      toast("success", "Signed in with Google!");
+      return cred.user;
+    } catch (err) {
+      toast("error", err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /** 🔹 Log out */
   const logOut = async () => {
     setLoading(true);
     await signOut(auth);
@@ -158,27 +203,18 @@ const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
-  /** 🔹 Update profile info */
   const updateProfileData = async (name, photoURL) => {
-    if (auth.currentUser) {
-      await updateProfile(auth.currentUser, { displayName: name, photoURL });
-      const updatedUser = {
-        ...user,
-        displayName: name,
-        photoURL,
-      };
-      setUser(updatedUser);
-      persistUser(updatedUser);
-    }
+    if (!auth.currentUser) return;
+    await updateProfile(auth.currentUser, { displayName: name, photoURL });
+    const updated = { ...user, displayName: name, photoURL };
+    setUser(updated);
+    persistUser(updated);
+    toast("success", "Profile updated");
   };
 
-  /** 🔹 Get Firebase ID Token for secure API calls */
-  const getIdToken = async () => {
-    if (auth.currentUser) return await auth.currentUser.getIdToken();
-    return null;
-  };
+  const getIdToken = () => auth.currentUser?.getIdToken() || null;
 
-  const authInfo = {
+  const value = {
     user,
     loading,
     signUp,
@@ -190,9 +226,7 @@ const AuthProvider = ({ children }) => {
     getIdToken,
   };
 
-  return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export default AuthProvider;
+export const useAuth = () => useContext(AuthContext);

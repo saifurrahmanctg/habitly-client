@@ -4,8 +4,8 @@ import { Flame, CheckCircle, Pencil, Trash2, X } from "lucide-react";
 import Swal from "sweetalert2";
 import Loader from "../Components/Loader";
 import useCalculateStreak from "../utils/useCalculateStreak";
-import { AuthContext } from "../Provider/AuthProvider";
 import useTheme from "../utils/useTheme";
+import { AuthContext } from "../provider/AuthProvider";
 
 const MyHabits = () => {
   const [habits, setHabits] = useState([]);
@@ -30,7 +30,7 @@ const MyHabits = () => {
       try {
         const token = await getIdToken();
         const res = await fetch(
-          `https://habitly-server-eosin.vercel.app/habits?userEmail=${user.email}`,
+          `${import.meta.env.VITE_API_URL}/habits?userEmail=${user.email}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -70,13 +70,10 @@ const MyHabits = () => {
 
     try {
       const token = await getIdToken();
-      const res = await fetch(
-        `https://habitly-server-eosin.vercel.app/habits/${id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/habits/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!res.ok) throw new Error("Failed to delete habit");
 
@@ -122,7 +119,7 @@ const MyHabits = () => {
     try {
       const token = await getIdToken();
       const res = await fetch(
-        `https://habitly-server-eosin.vercel.app/habits/${habit._id}`,
+        `${import.meta.env.VITE_API_URL}/habits/${habit._id}`,
         {
           method: "PUT",
           headers: {
@@ -179,7 +176,7 @@ const MyHabits = () => {
     try {
       const token = await getIdToken();
       const res = await fetch(
-        `https://habitly-server-eosin.vercel.app/habits/${editingHabit._id}`,
+        `${import.meta.env.VITE_API_URL}/habits/${editingHabit._id}`,
         {
           method: "PUT",
           headers: {
@@ -241,7 +238,7 @@ const MyHabits = () => {
           >
             You haven’t created any habits yet.{" "}
             <Link
-              to="/add-habit"
+              to="/dashboard/add-habit"
               className="text-pink-500 hover:underline font-medium"
             >
               Create one now!
@@ -315,14 +312,14 @@ const MyHabits = () => {
                       <td className="py-3 px-3 flex justify-center gap-3">
                         <button
                           onClick={() => openEditModal(habit)}
-                          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition"
+                          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition cursor-pointer"
                         >
                           <Pencil size={16} />
                         </button>
 
                         <button
                           onClick={() => handleDelete(habit._id)}
-                          className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+                          className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition cursor-pointer"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -333,7 +330,7 @@ const MyHabits = () => {
                           className={`p-2 rounded-full flex items-center justify-center transition ${
                             alreadyCompleted
                               ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] text-white hover:opacity-90"
+                              : "bg-gradient-to-r from-[#7E3AF2] via-[#EC4899] to-[#F97316] text-white hover:opacity-90 cursor-pointer"
                           }`}
                         >
                           <CheckCircle size={16} />
